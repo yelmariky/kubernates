@@ -1,18 +1,27 @@
-#### Stage 1: Build the application
-FROM openjdk:8-jdk-alpine
+# Use maven to compile the java application.
+FROM docker.io/maven AS build-env
 
-# Set the current working directory inside the image
+# Set the working directory to /app
 WORKDIR /app
 
-VOLUME /tmp
+# copy the pom.xml file to download dependencies
+COPY ../pom.xml ./
 
+# download dependencies as specified in pom.xml
+# building dependency layer early will speed up compile time when pom is unchanged
+RUN mvn verify --fail-never
 
+# Copy the rest of the working directory contents into the container
+COPY . ./
 
-COPY *.jar kubernates.jar
+# Compile the application.
+RUN mvn -Dmaven.test.skip=true package
 
-##ENTRYPOINT ["java","-jar","/kubernates.jar"]
+# Build runtime image.
+FROM openjdk:8-jre-alpine
 
-##ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-Dspring.profiles.active=prod","-jar","/backend-event.jar"]
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","kubernates.jar"]
+# Copy the compiled files over.
+COPY --from=build-env /app/target/ /app/
 
-## docker build . -t event/backend:v1
+# Starts java app with debugging server at port 5005.
+CMD ["java", "-jar", "/app/kubernates.jar"]

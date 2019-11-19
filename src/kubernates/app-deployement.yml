@@ -6,7 +6,7 @@ metadata:
   labels:                     # Labels that will be applied to this resource
     app: hello-app-server
 spec:
-  replicas: 1                 # No. of replicas/pods to run in this deployment
+  replicas: 3                 # No. of replicas/pods to run in this deployment
   selector:
     matchLabels:              # The deployment applies to any pods mayching the specified labels
       app: hello-app-server
@@ -17,7 +17,7 @@ spec:
     spec:                     # Spec for the containers that will be run in the Pods
       containers:
       - name: hello-app-server
-        image: dokeryelmariki/hello:latest
+        image: dokeryelmariki/kubernates:latest
         imagePullPolicy: IfNotPresent
         ports:
           - name: http
@@ -42,3 +42,5 @@ spec:
   - name: http
     port: 8081
     targetPort: 8081
+    
+
