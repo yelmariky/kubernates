@@ -8,7 +8,7 @@ VOLUME /tmp
 
 
 
-COPY ../target/*.jar kubernates.jar
+COPY *.jar kubernates.jar
 
 ##ENTRYPOINT ["java","-jar","/kubernates.jar"]
 
